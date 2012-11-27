@@ -6,13 +6,13 @@
       feet = 0;
     }
 
-    return parseFloat(feet) * 12 + parseFloat(inches);
+    return Number(parseFloat(feet) * 12 + parseFloat(inches)).toFixed(2);
   }
 
   function dimensionFeetAndInches(inches) {
     var feet = parseFloat(inches) / 12;
-    inches = Number(feet % 1).toFixed(2);
-    feet = Math.floor(feet);
+    inches = Number(feet % 1 * 12).toFixed(2);
+    feet = Math.floor(feet).toFixed(2);
 
     return {
       feet: feet,
