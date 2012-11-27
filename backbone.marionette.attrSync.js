@@ -1,6 +1,7 @@
 Marionette.attrSync = (function(Marionette) {
 
   var isArray = _.isArray;
+  var inArray = _.contains;
 
   // AttrSync Object
   // ---------------
@@ -84,21 +85,6 @@ Marionette.attrSync = (function(Marionette) {
       });
     },
 
-    _extractRealAttrsArray: function(attrs) {
-      var model = this._model;
-      var ret = [];
-      var attr = '';
-
-      for (var i = 0, l = attrs.length; i < l; i++) {
-        attr = attrs[i];
-        if (model.has(attr)) {
-          ret.push(attr);
-        }
-      }
-
-      return ret;
-    },
-
     _setUpSyncObject: function(obj) {
       var hasAttr = obj.hasOwnProperty('attr');
 
@@ -116,9 +102,6 @@ Marionette.attrSync = (function(Marionette) {
       if (!isArray(obj.syncsWith)) {
         obj.syncsWith = [obj.syncsWith];
       }
-
-      obj.attrs = this._extractRealAttrsArray(obj.attrs);
-      obj.syncsWith = this._extractRealAttrsArray(obj.syncsWith);
 
       var cb = this._createSyncCallback(obj.attrs, obj.syncsWith, obj.set);
       this._bindSyncCallback(obj.attrs, obj.syncsWith, cb);
@@ -139,12 +122,11 @@ Marionette.attrSync = (function(Marionette) {
       return hash;
     },
 
-    _extractRealAttrs: function(attrsHash) {
-      var model = this._model;
+    _extractAttrsInArray: function(attrsHash, attrs) {
       var ret = {};
-
+      
       for (var attr in attrsHash) {
-        if (attrsHash.hasOwnProperty(attr) && model.has(attr)) {
+        if (attrsHash.hasOwnProperty(attr) && inArray(attrs, attr)) {
           ret[attr] = attrsHash[attr];
         }
       }
@@ -166,7 +148,7 @@ Marionette.attrSync = (function(Marionette) {
           data = hash;
         }
 
-        data = self._extractRealAttrs(data);
+        data = self._extractAttrsInArray(data, depAttrs);
         model.set(data, { silent: true });
       };
     },
@@ -174,13 +156,14 @@ Marionette.attrSync = (function(Marionette) {
     _bindSyncCallback: function(depAttrs, syncAttrs, cb) {
       var binder = this._binder;
       var model = this._model;
+      var e = '';
 
       for (var i = 0, l = syncAttrs.length; i < l; i++) {
-        binder.bindTo(model, 'change:' + syncAttrs[i], cb);
+        e = 'change:' + syncAttrs[i];
+        binder.bindTo(model, e, cb);
       }
     }
   });
-
 
   // Public API
   // ----------
