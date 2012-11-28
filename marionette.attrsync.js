@@ -68,7 +68,7 @@ Marionette.attrSync = (function(Marionette) {
         attr = attrList[i];
         for (var j = 0; j < l; j++) {
           otherAttr = attrList[j];
-          if (attr != otherAttr && model.has(attr) && model.has(otherAttr)) {
+          if (attr != otherAttr) {
             this._syncPair(attr, otherAttr);
           }
         }
